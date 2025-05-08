@@ -1,0 +1,1230 @@
+Bloom is a self-care website made to help you stay balanced, healthy, and in tune with yourself.From an easy-to-use period tracker and hydration reminders to gentle daily alerts,
+Bloom is here to support your well-being—one small habit at a time.It’s more than just a tracker. It’s your peaceful space to pause, reflect, and grow.
+
+I designed this website with the help of Canva Code, which made it easier for me to bring my ideas to life.
+From layout to visuals, Canva Code supported my creative flow and helped me build a clean, beautiful, and functional self-care space.
+
+
+"Because your well-being blooms with care."
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bloom - Your Self-Care Companion</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Quicksand:wght@300;400;500;600;700&display=swap');
+        
+        body {
+            font-family: 'Quicksand', sans-serif;
+            background-color: #FFF5F8;
+        }
+        
+        .water-drop {
+            animation: float 3s ease-in-out infinite;
+        }
+        
+        @keyframes float {
+            0% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+            100% { transform: translateY(0px); }
+        }
+        
+        .period-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+        }
+        
+        .period-dot.period {
+            background-color: #E53E3E;
+        }
+        
+        .period-dot.fertile {
+            background-color: #38A169;
+        }
+        
+        .period-dot.ovulation {
+            background-color: #3182CE;
+        }
+        
+        .water-progress {
+            transition: width 0.5s ease;
+        }
+        
+        .reminder-item {
+            transition: all 0.3s ease;
+        }
+        
+        .reminder-item:hover {
+            transform: translateY(-2px);
+        }
+        
+        .tab-content {
+            display: none;
+        }
+        
+        .tab-content.active {
+            display: block;
+        }
+        
+        .notification {
+            animation: slideIn 0.5s ease forwards;
+            transform: translateY(-100%);
+            opacity: 0;
+        }
+        
+        @keyframes slideIn {
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="min-h-screen">
+        <!-- Header -->
+        <header class="bg-gradient-to-r from-pink-500 to-purple-500 text-white py-6 px-4">
+            <div class="container mx-auto max-w-5xl">
+                <div class="flex justify-between items-center">
+                    <div class="flex items-center">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 mr-2" viewBox="0 0 20 20" fill="currentColor">
+                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-11a1 1 0 10-2 0v2H7a1 1 0 100 2h2v2a1 1 0 102 0v-2h2a1 1 0 100-2h-2V7z" clip-rule="evenodd" />
+                        </svg>
+                        <h1 class="text-2xl font-bold">Bloom</h1>
+                    </div>
+                    <div class="hidden md:block">
+                        <span id="greeting" class="font-medium">Good morning!</span>
+                    </div>
+                </div>
+                <p class="mt-2 text-white/80">Your personal self-care companion</p>
+            </div>
+        </header>
+        
+        <!-- Main Content -->
+        <main class="container mx-auto max-w-5xl px-4 py-8">
+            <!-- Notification Area -->
+            <div id="notification-area" class="fixed top-4 right-4 z-50 w-72"></div>
+            
+            <!-- Name Input (First Time) -->
+            <div id="name-input" class="bg-white rounded-xl shadow-lg p-6 mb-8 text-center">
+                <h2 class="text-xl font-bold text-gray-800 mb-4">Welcome to Bloom!</h2>
+                <p class="text-gray-600 mb-4">Let's personalize your experience. What's your name?</p>
+                <div class="flex">
+                    <input type="text" id="user-name" placeholder="Enter your name" class="flex-grow px-4 py-2 border border-pink-300 rounded-l-lg focus:outline-none focus:ring-2 focus:ring-pink-500">
+                    <button id="save-name" class="bg-pink-500 hover:bg-pink-600 text-white px-6 py-2 rounded-r-lg transition">Save</button>
+                </div>
+            </div>
+            
+            <!-- Dashboard -->
+            <div id="dashboard" class="hidden">
+                <!-- Tabs -->
+                <div class="flex overflow-x-auto mb-6 bg-white rounded-lg shadow-md">
+                    <button class="tab-button flex-1 py-3 px-4 font-medium text-center border-b-2 border-pink-500 text-pink-600" data-tab="overview">Overview</button>
+                    <button class="tab-button flex-1 py-3 px-4 font-medium text-center border-b-2 border-transparent text-gray-500 hover:text-pink-500" data-tab="period">Period Tracker</button>
+                    <button class="tab-button flex-1 py-3 px-4 font-medium text-center border-b-2 border-transparent text-gray-500 hover:text-pink-500" data-tab="water">Water Tracker</button>
+                    <button class="tab-button flex-1 py-3 px-4 font-medium text-center border-b-2 border-transparent text-gray-500 hover:text-pink-500" data-tab="reminders">Reminders</button>
+                </div>
+                
+                <!-- Overview Tab -->
+                <div id="overview-tab" class="tab-content active">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <!-- Period Summary -->
+                        <div class="bg-white rounded-xl shadow-lg p-6">
+                            <div class="flex justify-between items-center mb-4">
+                                <h2 class="text-lg font-bold text-gray-800">Period Tracker</h2>
+                                <button class="text-pink-500 hover:text-pink-600 text-sm font-medium" data-tab-trigger="period">View Details</button>
+                            </div>
+                            <div class="flex items-center mb-4">
+                                <div class="w-12 h-12 bg-pink-100 rounded-full flex items-center justify-center mr-4">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-pink-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                                    </svg>
+                                </div>
+                                <div>
+                                    <p class="text-gray-600">Next period in</p>
+                                    <p id="next-period" class="text-xl font-bold text-pink-600">-- days</p>
+                                </div>
+                            </div>
+                            <div class="flex justify-between text-sm text-gray-500">
+                                <span>Last period: <span id="last-period-date">--</span></span>
+                                <span>Cycle length: <span id="cycle-length">-- days</span></span>
+                            </div>
+                        </div>
+                        
+                        <!-- Water Tracker Summary -->
+                        <div class="bg-white rounded-xl shadow-lg p-6">
+                            <div class="flex justify-between items-center mb-4">
+                                <h2 class="text-lg font-bold text-gray-800">Water Intake</h2>
+                                <button class="text-pink-500 hover:text-pink-600 text-sm font-medium" data-tab-trigger="water">View Details</button>
+                            </div>
+                            <div class="flex items-center mb-4">
+                                <div class="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center mr-4">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-blue-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z" />
+                                    </svg>
+                                </div>
+                                <div class="flex-grow">
+                                    <div class="flex justify-between mb-1">
+                                        <p class="text-gray-600">Today's intake</p>
+                                        <p id="water-intake-text" class="font-medium">0/8 glasses</p>
+                                    </div>
+                                    <div class="w-full bg-gray-200 rounded-full h-2.5">
+                                        <div id="water-progress" class="water-progress bg-blue-500 h-2.5 rounded-full" style="width: 0%"></div>
+                                    </div>
+                                </div>
+                            </div>
+                            <button id="add-water-quick" class="w-full bg-blue-100 hover:bg-blue-200 text-blue-700 py-2 rounded-lg transition flex items-center justify-center">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-1" viewBox="0 0 20 20" fill="currentColor">
+                                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-11a1 1 0 10-2 0v2H7a1 1 0 100 2h2v2a1 1 0 102 0v-2h2a1 1 0 100-2h-2V7z" clip-rule="evenodd" />
+                                </svg>
+                                Add Glass
+                            </button>
+                        </div>
+                        
+                        <!-- Reminders Summary -->
+                        <div class="bg-white rounded-xl shadow-lg p-6 md:col-span-2">
+                            <div class="flex justify-between items-center mb-4">
+                                <h2 class="text-lg font-bold text-gray-800">Today's Reminders</h2>
+                                <button class="text-pink-500 hover:text-pink-600 text-sm font-medium" data-tab-trigger="reminders">View All</button>
+                            </div>
+                            <div id="today-reminders" class="space-y-3">
+                                <p class="text-gray-500 text-center py-4">No reminders for today</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Period Tracker Tab -->
+                <div id="period-tab" class="tab-content">
+                    <div class="bg-white rounded-xl shadow-lg p-6 mb-6">
+                        <h2 class="text-xl font-bold text-gray-800 mb-4">Period Tracker</h2>
+                        
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div>
+                                <h3 class="text-lg font-medium text-gray-700 mb-3">Your Cycle</h3>
+                                <div class="bg-pink-50 rounded-lg p-4 mb-4">
+                                    <div class="grid grid-cols-2 gap-4">
+                                        <div>
+                                            <p class="text-sm text-gray-500">Last Period Start</p>
+                                            <input type="date" id="last-period-input" class="mt-1 w-full px-3 py-2 border border-pink-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-pink-500">
+                                        </div>
+                                        <div>
+                                            <p class="text-sm text-gray-500">Cycle Length (days)</p>
+                                            <input type="number" id="cycle-length-input" min="21" max="45" value="28" class="mt-1 w-full px-3 py-2 border border-pink-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-pink-500">
+                                        </div>
+                                        <div>
+                                            <p class="text-sm text-gray-500">Period Length (days)</p>
+                                            <input type="number" id="period-length-input" min="2" max="10" value="5" class="mt-1 w-full px-3 py-2 border border-pink-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-pink-500">
+                                        </div>
+                                        <div class="flex items-end">
+                                            <button id="update-period" class="w-full bg-pink-500 hover:bg-pink-600 text-white py-2 rounded-lg transition">Update</button>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="bg-white border border-gray-200 rounded-lg p-4">
+                                    <h4 class="font-medium text-gray-700 mb-2">Predictions</h4>
+                                    <ul class="space-y-2">
+                                        <li class="flex justify-between">
+                                            <span class="text-gray-600">Next period starts:</span>
+                                            <span id="next-period-date" class="font-medium">--</span>
+                                        </li>
+                                        <li class="flex justify-between">
+                                            <span class="text-gray-600">Fertile window:</span>
+                                            <span id="fertile-window" class="font-medium">--</span>
+                                        </li>
+                                        <li class="flex justify-between">
+                                            <span class="text-gray-600">Ovulation day:</span>
+                                            <span id="ovulation-day" class="font-medium">--</span>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </div>
+                            
+                            <div>
+                                <h3 class="text-lg font-medium text-gray-700 mb-3">Calendar</h3>
+                                <div class="bg-white border border-gray-200 rounded-lg p-4">
+                                    <div class="grid grid-cols-7 gap-1 text-center mb-2">
+                                        <div class="text-xs font-medium text-gray-500">Sun</div>
+                                        <div class="text-xs font-medium text-gray-500">Mon</div>
+                                        <div class="text-xs font-medium text-gray-500">Tue</div>
+                                        <div class="text-xs font-medium text-gray-500">Wed</div>
+                                        <div class="text-xs font-medium text-gray-500">Thu</div>
+                                        <div class="text-xs font-medium text-gray-500">Fri</div>
+                                        <div class="text-xs font-medium text-gray-500">Sat</div>
+                                    </div>
+                                    <div id="period-calendar" class="grid grid-cols-7 gap-1">
+                                        <!-- Calendar will be generated here -->
+                                    </div>
+                                    
+                                    <div class="mt-4 flex justify-center space-x-4 text-xs">
+                                        <div class="flex items-center">
+                                            <div class="period-dot period mr-1"></div>
+                                            <span>Period</span>
+                                        </div>
+                                        <div class="flex items-center">
+                                            <div class="period-dot fertile mr-1"></div>
+                                            <span>Fertile</span>
+                                        </div>
+                                        <div class="flex items-center">
+                                            <div class="period-dot ovulation mr-1"></div>
+                                            <span>Ovulation</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-white rounded-xl shadow-lg p-6">
+                        <h3 class="text-lg font-medium text-gray-700 mb-3">Period Symptoms Tracker</h3>
+                        <p class="text-gray-600 mb-4">Track your symptoms to better understand your cycle patterns.</p>
+                        
+                        <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
+                            <button class="symptom-btn bg-white border border-gray-200 hover:border-pink-300 rounded-lg p-3 flex flex-col items-center transition" data-symptom="cramps">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636" />
+                                </svg>
+                                <span class="mt-1 text-sm">Cramps</span>
+                            </button>
+                            <button class="symptom-btn bg-white border border-gray-200 hover:border-pink-300 rounded-lg p-3 flex flex-col items-center transition" data-symptom="headache">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                                </svg>
+                                <span class="mt-1 text-sm">Headache</span>
+                            </button>
+                            <button class="symptom-btn bg-white border border-gray-200 hover:border-pink-300 rounded-lg p-3 flex flex-col items-center transition" data-symptom="bloating">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                                </svg>
+                                <span class="mt-1 text-sm">Bloating</span>
+                            </button>
+                            <button class="symptom-btn bg-white border border-gray-200 hover:border-pink-300 rounded-lg p-3 flex flex-col items-center transition" data-symptom="mood">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.828 14.828a4 4 0 01-5.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                </svg>
+                                <span class="mt-1 text-sm">Mood Swings</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Water Tracker Tab -->
+                <div id="water-tab" class="tab-content">
+                    <div class="bg-white rounded-xl shadow-lg p-6 mb-6">
+                        <h2 class="text-xl font-bold text-gray-800 mb-4">Water Intake Tracker</h2>
+                        
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div>
+                                <h3 class="text-lg font-medium text-gray-700 mb-3">Today's Progress</h3>
+                                <div class="bg-blue-50 rounded-lg p-6 flex flex-col items-center">
+                                    <div class="relative w-48 h-48 mb-4">
+                                        <svg class="w-full h-full" viewBox="0 0 100 100">
+                                            <circle cx="50" cy="50" r="45" fill="none" stroke="#E6E6E6" stroke-width="10" />
+                                            <circle id="water-circle" cx="50" cy="50" r="45" fill="none" stroke="#3B82F6" stroke-width="10" stroke-dasharray="282.7" stroke-dashoffset="282.7" transform="rotate(-90 50 50)" />
+                                        </svg>
+                                        <div class="absolute inset-0 flex flex-col items-center justify-center">
+                                            <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10 text-blue-500 water-drop" viewBox="0 0 20 20" fill="currentColor">
+                                                <path fill-rule="evenodd" d="M5.293 9.707a1 1 0 010-1.414l4-4a1 1 0 011.414 0l4 4a1 1 0 01-1.414 1.414L11 7.414V15a1 1 0 11-2 0V7.414L6.707 9.707a1 1 0 01-1.414 0z" clip-rule="evenodd" />
+                                            </svg>
+                                            <p id="water-percentage" class="text-3xl font-bold text-gray-800">0%</p>
+                                            <p id="water-glasses" class="text-gray-500">0/8 glasses</p>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="grid grid-cols-4 gap-2 w-full">
+                                        <button class="water-btn bg-blue-100 hover:bg-blue-200 text-blue-700 p-2 rounded-lg transition text-center" data-amount="1">
+                                            +1
+                                        </button>
+                                        <button class="water-btn bg-blue-100 hover:bg-blue-200 text-blue-700 p-2 rounded-lg transition text-center" data-amount="2">
+                                            +2
+                                        </button>
+                                        <button class="water-btn bg-blue-100 hover:bg-blue-200 text-blue-700 p-2 rounded-lg transition text-center" data-amount="3">
+                                            +3
+                                        </button>
+                                        <button id="reset-water" class="bg-gray-100 hover:bg-gray-200 text-gray-700 p-2 rounded-lg transition text-center">
+                                            Reset
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div>
+                                <h3 class="text-lg font-medium text-gray-700 mb-3">Settings</h3>
+                                <div class="bg-white border border-gray-200 rounded-lg p-4">
+                                    <div class="mb-4">
+                                        <label for="daily-goal" class="block text-sm text-gray-600 mb-1">Daily Goal (glasses)</label>
+                                        <input type="number" id="daily-goal" min="1" max="15" value="8" class="w-full px-3 py-2 border border-blue-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                                    </div>
+                                    
+                                    <div class="mb-4">
+                                        <label for="reminder-interval" class="block text-sm text-gray-600 mb-1">Reminder Interval (minutes)</label>
+                                        <input type="number" id="reminder-interval" min="30" max="240" value="60" class="w-full px-3 py-2 border border-blue-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                                    </div>
+                                    
+                                    <div class="flex items-center mb-4">
+                                        <input type="checkbox" id="enable-reminders" class="w-4 h-4 text-blue-600 rounded focus:ring-blue-500">
+                                        <label for="enable-reminders" class="ml-2 text-sm text-gray-600">Enable water reminders</label>
+                                    </div>
+                                    
+                                    <button id="save-water-settings" class="w-full bg-blue-500 hover:bg-blue-600 text-white py-2 rounded-lg transition">Save Settings</button>
+                                </div>
+                                
+                                <div class="mt-4 bg-blue-50 rounded-lg p-4">
+                                    <h4 class="font-medium text-gray-700 mb-2">Water Intake Benefits</h4>
+                                    <ul class="text-sm text-gray-600 space-y-1">
+                                        <li>• Helps regulate body temperature</li>
+                                        <li>• Prevents dehydration</li>
+                                        <li>• Supports skin health</li>
+                                        <li>• Aids digestion</li>
+                                        <li>• Helps maintain energy levels</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Reminders Tab -->
+                <div id="reminders-tab" class="tab-content">
+                    <div class="bg-white rounded-xl shadow-lg p-6 mb-6">
+                        <h2 class="text-xl font-bold text-gray-800 mb-4">Self-Care Reminders</h2>
+                        
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div>
+                                <h3 class="text-lg font-medium text-gray-700 mb-3">Add New Reminder</h3>
+                                <div class="bg-purple-50 rounded-lg p-4">
+                                    <div class="mb-4">
+                                        <label for="reminder-title" class="block text-sm text-gray-600 mb-1">Title</label>
+                                        <input type="text" id="reminder-title" placeholder="Take vitamins" class="w-full px-3 py-2 border border-purple-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500">
+                                    </div>
+                                    
+                                    <div class="mb-4">
+                                        <label for="reminder-time" class="block text-sm text-gray-600 mb-1">Time</label>
+                                        <input type="time" id="reminder-time" class="w-full px-3 py-2 border border-purple-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500">
+                                    </div>
+                                    
+                                    <div class="mb-4">
+                                        <label class="block text-sm text-gray-600 mb-1">Repeat</label>
+                                        <div class="grid grid-cols-7 gap-1">
+                                            <button class="day-btn rounded-full w-8 h-8 text-xs border border-purple-200 hover:bg-purple-100" data-day="0">S</button>
+                                            <button class="day-btn rounded-full w-8 h-8 text-xs border border-purple-200 hover:bg-purple-100" data-day="1">M</button>
+                                            <button class="day-btn rounded-full w-8 h-8 text-xs border border-purple-200 hover:bg-purple-100" data-day="2">T</button>
+                                            <button class="day-btn rounded-full w-8 h-8 text-xs border border-purple-200 hover:bg-purple-100" data-day="3">W</button>
+                                            <button class="day-btn rounded-full w-8 h-8 text-xs border border-purple-200 hover:bg-purple-100" data-day="4">T</button>
+                                            <button class="day-btn rounded-full w-8 h-8 text-xs border border-purple-200 hover:bg-purple-100" data-day="5">F</button>
+                                            <button class="day-btn rounded-full w-8 h-8 text-xs border border-purple-200 hover:bg-purple-100" data-day="6">S</button>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="mb-4">
+                                        <label for="reminder-category" class="block text-sm text-gray-600 mb-1">Category</label>
+                                        <select id="reminder-category" class="w-full px-3 py-2 border border-purple-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500">
+                                            <option value="medication">Medication</option>
+                                            <option value="exercise">Exercise</option>
+                                            <option value="skincare">Skincare</option>
+                                            <option value="other">Other</option>
+                                        </select>
+                                    </div>
+                                    
+                                    <button id="add-reminder" class="w-full bg-purple-500 hover:bg-purple-600 text-white py-2 rounded-lg transition">Add Reminder</button>
+                                </div>
+                            </div>
+                            
+                            <div>
+                                <h3 class="text-lg font-medium text-gray-700 mb-3">Your Reminders</h3>
+                                <div id="reminders-list" class="bg-white border border-gray-200 rounded-lg p-4 max-h-96 overflow-y-auto">
+                                    <p class="text-gray-500 text-center py-4">No reminders added yet</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-white rounded-xl shadow-lg p-6">
+                        <h3 class="text-lg font-medium text-gray-700 mb-3">Self-Care Suggestions</h3>
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                            <div class="bg-pink-50 rounded-lg p-4">
+                                <h4 class="font-medium text-pink-700 mb-2">During Your Period</h4>
+                                <ul class="text-sm text-gray-600 space-y-1">
+                                    <li>• Stay hydrated</li>
+                                    <li>• Use a heating pad for cramps</li>
+                                    <li>• Get plenty of rest</li>
+                                    <li>• Gentle exercise like yoga</li>
+                                    <li>• Eat iron-rich foods</li>
+                                </ul>
+                            </div>
+                            <div class="bg-blue-50 rounded-lg p-4">
+                                <h4 class="font-medium text-blue-700 mb-2">Daily Self-Care</h4>
+                                <ul class="text-sm text-gray-600 space-y-1">
+                                    <li>• 8 hours of sleep</li>
+                                    <li>• Mindfulness meditation</li>
+                                    <li>• Regular physical activity</li>
+                                    <li>• Balanced nutrition</li>
+                                    <li>• Social connections</li>
+                                </ul>
+                            </div>
+                            <div class="bg-purple-50 rounded-lg p-4">
+                                <h4 class="font-medium text-purple-700 mb-2">Mental Wellness</h4>
+                                <ul class="text-sm text-gray-600 space-y-1">
+                                    <li>• Journal your thoughts</li>
+                                    <li>• Practice gratitude</li>
+                                    <li>• Set boundaries</li>
+                                    <li>• Take breaks from screens</li>
+                                    <li>• Seek support when needed</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        // DOM Elements
+        const nameInput = document.getElementById('name-input');
+        const dashboard = document.getElementById('dashboard');
+        const userNameInput = document.getElementById('user-name');
+        const saveNameBtn = document.getElementById('save-name');
+        const greeting = document.getElementById('greeting');
+        const tabButtons = document.querySelectorAll('.tab-button');
+        const tabContents = document.querySelectorAll('.tab-content');
+        const tabTriggers = document.querySelectorAll('[data-tab-trigger]');
+        const notificationArea = document.getElementById('notification-area');
+        
+        // Period Tracker Elements
+        const lastPeriodInput = document.getElementById('last-period-input');
+        const cycleLengthInput = document.getElementById('cycle-length-input');
+        const periodLengthInput = document.getElementById('period-length-input');
+        const updatePeriodBtn = document.getElementById('update-period');
+        const nextPeriodDate = document.getElementById('next-period-date');
+        const fertileWindow = document.getElementById('fertile-window');
+        const ovulationDay = document.getElementById('ovulation-day');
+        const periodCalendar = document.getElementById('period-calendar');
+        const nextPeriod = document.getElementById('next-period');
+        const lastPeriodDate = document.getElementById('last-period-date');
+        const cycleLength = document.getElementById('cycle-length');
+        
+        // Water Tracker Elements
+        const waterProgress = document.getElementById('water-progress');
+        const waterCircle = document.getElementById('water-circle');
+        const waterPercentage = document.getElementById('water-percentage');
+        const waterGlasses = document.getElementById('water-glasses');
+        const waterIntakeText = document.getElementById('water-intake-text');
+        const waterBtns = document.querySelectorAll('.water-btn');
+        const resetWaterBtn = document.getElementById('reset-water');
+        const addWaterQuickBtn = document.getElementById('add-water-quick');
+        const dailyGoalInput = document.getElementById('daily-goal');
+        const reminderIntervalInput = document.getElementById('reminder-interval');
+        const enableRemindersCheckbox = document.getElementById('enable-reminders');
+        const saveWaterSettingsBtn = document.getElementById('save-water-settings');
+        
+        // Reminders Elements
+        const reminderTitle = document.getElementById('reminder-title');
+        const reminderTime = document.getElementById('reminder-time');
+        const dayBtns = document.querySelectorAll('.day-btn');
+        const reminderCategory = document.getElementById('reminder-category');
+        const addReminderBtn = document.getElementById('add-reminder');
+        const remindersList = document.getElementById('reminders-list');
+        const todayReminders = document.getElementById('today-reminders');
+        const symptomBtns = document.querySelectorAll('.symptom-btn');
+        
+        // App State
+        let state = {
+            userName: '',
+            period: {
+                lastPeriod: null,
+                cycleLength: 28,
+                periodLength: 5
+            },
+            water: {
+                dailyGoal: 8,
+                current: 0,
+                reminderInterval: 60,
+                enableReminders: false,
+                lastReminder: null
+            },
+            reminders: [],
+            symptoms: {},
+            selectedDays: []
+        };
+        
+        // Load saved data from localStorage
+        function loadSavedData() {
+            const savedData = localStorage.getItem('bloomAppData');
+            if (savedData) {
+                const parsedData = JSON.parse(savedData);
+                state = { ...state, ...parsedData };
+                
+                // Convert date strings back to Date objects
+                if (state.period.lastPeriod) {
+                    state.period.lastPeriod = new Date(state.period.lastPeriod);
+                }
+                
+                if (state.userName) {
+                    nameInput.classList.add('hidden');
+                    dashboard.classList.remove('hidden');
+                    updateGreeting();
+                }
+            }
+            
+            // Set today's date as default if no last period
+            if (!state.period.lastPeriod) {
+                const today = new Date();
+                state.period.lastPeriod = today;
+            }
+            
+            updateUI();
+        }
+        
+        // Save data to localStorage
+        function saveData() {
+            localStorage.setItem('bloomAppData', JSON.stringify(state));
+        }
+        
+        // Update UI based on current state
+        function updateUI() {
+            // Period tracker UI
+            if (state.period.lastPeriod) {
+                lastPeriodInput.value = formatDateForInput(state.period.lastPeriod);
+                cycleLengthInput.value = state.period.cycleLength;
+                periodLengthInput.value = state.period.periodLength;
+                
+                updatePeriodPredictions();
+                generateCalendar();
+            }
+            
+            // Water tracker UI
+            dailyGoalInput.value = state.water.dailyGoal;
+            reminderIntervalInput.value = state.water.reminderInterval;
+            enableRemindersCheckbox.checked = state.water.enableReminders;
+            updateWaterUI();
+            
+            // Reminders UI
+            updateRemindersUI();
+        }
+        
+        // Update greeting based on time of day
+        function updateGreeting() {
+            const hour = new Date().getHours();
+            let greetingText = '';
+            
+            if (hour < 12) {
+                greetingText = 'Good morning';
+            } else if (hour < 18) {
+                greetingText = 'Good afternoon';
+            } else {
+                greetingText = 'Good evening';
+            }
+            
+            greeting.textContent = `${greetingText}, ${state.userName}!`;
+        }
+        
+        // Format date for input fields (YYYY-MM-DD)
+        function formatDateForInput(date) {
+            const year = date.getFullYear();
+            const month = String(date.getMonth() + 1).padStart(2, '0');
+            const day = String(date.getDate()).padStart(2, '0');
+            return `${year}-${month}-${day}`;
+        }
+        
+        // Format date for display (Month Day, Year)
+        function formatDateForDisplay(date) {
+            return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+        }
+        
+        // Calculate days between two dates
+        function daysBetween(date1, date2) {
+            const oneDay = 24 * 60 * 60 * 1000;
+            return Math.round(Math.abs((date1 - date2) / oneDay));
+        }
+        
+        // Update period predictions
+        function updatePeriodPredictions() {
+            if (!state.period.lastPeriod) return;
+            
+            const lastPeriod = new Date(state.period.lastPeriod);
+            const cycleLength = state.period.cycleLength;
+            const periodLength = state.period.periodLength;
+            
+            // Calculate next period
+            const nextPeriodStartDate = new Date(lastPeriod);
+            nextPeriodStartDate.setDate(lastPeriod.getDate() + cycleLength);
+            
+            // Calculate ovulation (typically 14 days before next period)
+            const ovulationDate = new Date(nextPeriodStartDate);
+            ovulationDate.setDate(nextPeriodStartDate.getDate() - 14);
+            
+            // Calculate fertile window (typically 5 days before ovulation to 1 day after)
+            const fertileStartDate = new Date(ovulationDate);
+            fertileStartDate.setDate(ovulationDate.getDate() - 5);
+            const fertileEndDate = new Date(ovulationDate);
+            fertileEndDate.setDate(ovulationDate.getDate() + 1);
+            
+            // Update UI
+            nextPeriodDate.textContent = formatDateForDisplay(nextPeriodStartDate);
+            fertileWindow.textContent = `${formatDateForDisplay(fertileStartDate)} - ${formatDateForDisplay(fertileEndDate)}`;
+            ovulationDay.textContent = formatDateForDisplay(ovulationDate);
+            
+            // Update overview
+            const today = new Date();
+            const daysUntilNextPeriod = daysBetween(today, nextPeriodStartDate);
+            nextPeriod.textContent = `${daysUntilNextPeriod} days`;
+            lastPeriodDate.textContent = formatDateForDisplay(lastPeriod);
+            cycleLength.textContent = `${cycleLength} days`;
+        }
+        
+        // Generate calendar
+        function generateCalendar() {
+            if (!state.period.lastPeriod) return;
+            
+            periodCalendar.innerHTML = '';
+            
+            const today = new Date();
+            const currentMonth = today.getMonth();
+            const currentYear = today.getFullYear();
+            
+            // Get first day of month
+            const firstDay = new Date(currentYear, currentMonth, 1);
+            const startingDay = firstDay.getDay(); // 0 = Sunday
+            
+            // Get number of days in month
+            const lastDay = new Date(currentYear, currentMonth + 1, 0);
+            const daysInMonth = lastDay.getDate();
+            
+            // Add empty cells for days before first day of month
+            for (let i = 0; i < startingDay; i++) {
+                const emptyCell = document.createElement('div');
+                emptyCell.className = 'h-8';
+                periodCalendar.appendChild(emptyCell);
+            }
+            
+            // Period calculations
+            const lastPeriod = new Date(state.period.lastPeriod);
+            const cycleLength = state.period.cycleLength;
+            const periodLength = state.period.periodLength;
+            
+            // Calculate next 3 periods
+            const periods = [];
+            let nextPeriod = new Date(lastPeriod);
+            
+            for (let i = 0; i < 3; i++) {
+                if (i > 0) {
+                    nextPeriod = new Date(nextPeriod);
+                    nextPeriod.setDate(nextPeriod.getDate() + cycleLength);
+                }
+                
+                const periodEnd = new Date(nextPeriod);
+                periodEnd.setDate(nextPeriod.getDate() + periodLength - 1);
+                
+                periods.push({
+                    start: new Date(nextPeriod),
+                    end: new Date(periodEnd)
+                });
+                
+                // Calculate ovulation (typically 14 days before next period)
+                const nextNextPeriod = new Date(nextPeriod);
+                nextNextPeriod.setDate(nextPeriod.getDate() + cycleLength);
+                
+                const ovulationDate = new Date(nextNextPeriod);
+                ovulationDate.setDate(nextNextPeriod.getDate() - 14);
+                
+                // Calculate fertile window (typically 5 days before ovulation to 1 day after)
+                const fertileStartDate = new Date(ovulationDate);
+                fertileStartDate.setDate(ovulationDate.getDate() - 5);
+                const fertileEndDate = new Date(ovulationDate);
+                fertileEndDate.setDate(ovulationDate.getDate() + 1);
+                
+                periods[i].ovulation = new Date(ovulationDate);
+                periods[i].fertileStart = new Date(fertileStartDate);
+                periods[i].fertileEnd = new Date(fertileEndDate);
+            }
+            
+            // Add calendar days
+            for (let day = 1; day <= daysInMonth; day++) {
+                const date = new Date(currentYear, currentMonth, day);
+                const dayCell = document.createElement('div');
+                dayCell.className = 'h-8 flex flex-col items-center justify-center text-sm relative';
+                
+                // Check if this day is today
+                if (date.getDate() === today.getDate() && 
+                    date.getMonth() === today.getMonth() && 
+                    date.getFullYear() === today.getFullYear()) {
+                    dayCell.classList.add('font-bold');
+                    dayCell.innerHTML = `<span class="bg-pink-100 rounded-full w-6 h-6 flex items-center justify-center">${day}</span>`;
+                } else {
+                    dayCell.textContent = day;
+                }
+                
+                // Check if this day is in a period, fertile window, or ovulation
+                let isPeriod = false;
+                let isFertile = false;
+                let isOvulation = false;
+                
+                periods.forEach(period => {
+                    // Check if date is in period
+                    if (date >= period.start && date <= period.end) {
+                        isPeriod = true;
+                    }
+                    
+                    // Check if date is in fertile window
+                    if (date >= period.fertileStart && date <= period.fertileEnd) {
+                        isFertile = true;
+                    }
+                    
+                    // Check if date is ovulation day
+                    if (date.getDate() === period.ovulation.getDate() && 
+                        date.getMonth() === period.ovulation.getMonth() && 
+                        date.getFullYear() === period.ovulation.getFullYear()) {
+                        isOvulation = true;
+                    }
+                });
+                
+                // Add indicator dot
+                if (isPeriod || isFertile || isOvulation) {
+                    const dot = document.createElement('div');
+                    dot.className = 'period-dot mt-1';
+                    
+                    if (isPeriod) {
+                        dot.classList.add('period');
+                    } else if (isOvulation) {
+                        dot.classList.add('ovulation');
+                    } else if (isFertile) {
+                        dot.classList.add('fertile');
+                    }
+                    
+                    dayCell.appendChild(dot);
+                }
+                
+                periodCalendar.appendChild(dayCell);
+            }
+        }
+        
+        // Update water UI
+        function updateWaterUI() {
+            const percentage = Math.min(100, Math.round((state.water.current / state.water.dailyGoal) * 100));
+            waterProgress.style.width = `${percentage}%`;
+            waterPercentage.textContent = `${percentage}%`;
+            waterGlasses.textContent = `${state.water.current}/${state.water.dailyGoal} glasses`;
+            waterIntakeText.textContent = `${state.water.current}/${state.water.dailyGoal} glasses`;
+            
+            // Update circle progress
+            const circumference = 2 * Math.PI * 45;
+            const offset = circumference - (percentage / 100) * circumference;
+            waterCircle.style.strokeDasharray = `${circumference} ${circumference}`;
+            waterCircle.style.strokeDashoffset = offset;
+        }
+        
+        // Update reminders UI
+        function updateRemindersUI() {
+            remindersList.innerHTML = '';
+            todayReminders.innerHTML = '';
+            
+            if (state.reminders.length === 0) {
+                remindersList.innerHTML = '<p class="text-gray-500 text-center py-4">No reminders added yet</p>';
+                todayReminders.innerHTML = '<p class="text-gray-500 text-center py-4">No reminders for today</p>';
+                return;
+            }
+            
+            const today = new Date();
+            const dayOfWeek = today.getDay();
+            let todayCount = 0;
+            
+            state.reminders.forEach((reminder, index) => {
+                // Create reminder item for the list
+                const reminderItem = document.createElement('div');
+                reminderItem.className = 'reminder-item bg-white border border-gray-200 rounded-lg p-3 mb-2 hover:shadow-md transition';
+                
+                const categoryColors = {
+                    medication: 'bg-red-100 text-red-800',
+                    exercise: 'bg-green-100 text-green-800',
+                    skincare: 'bg-blue-100 text-blue-800',
+                    other: 'bg-purple-100 text-purple-800'
+                };
+                
+                const daysText = reminder.days.map(day => {
+                    const dayNames = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+                    return dayNames[day];
+                }).join(', ');
+                
+                reminderItem.innerHTML = `
+                    <div class="flex justify-between items-start">
+                        <div>
+                            <h4 class="font-medium text-gray-800">${reminder.title}</h4>
+                            <p class="text-sm text-gray-500">${reminder.time} • ${daysText}</p>
+                        </div>
+                        <div class="flex items-center">
+                            <span class="text-xs ${categoryColors[reminder.category]} px-2 py-1 rounded-full mr-2">${reminder.category}</span>
+                            <button class="delete-reminder text-gray-400 hover:text-red-500" data-index="${index}">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                                    <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd" />
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+                `;
+                
+                remindersList.appendChild(reminderItem);
+                
+                // Add to today's reminders if applicable
+                if (reminder.days.includes(dayOfWeek)) {
+                    todayCount++;
+                    const todayItem = document.createElement('div');
+                    todayItem.className = 'bg-white border border-gray-200 rounded-lg p-3 mb-2 hover:shadow-md transition';
+                    todayItem.innerHTML = `
+                        <div class="flex justify-between items-center">
+                            <div>
+                                <h4 class="font-medium text-gray-800">${reminder.title}</h4>
+                                <p class="text-sm text-gray-500">${reminder.time}</p>
+                            </div>
+                            <span class="text-xs ${categoryColors[reminder.category]} px-2 py-1 rounded-full">${reminder.category}</span>
+                        </div>
+                    `;
+                    todayReminders.appendChild(todayItem);
+                }
+            });
+            
+            if (todayCount === 0) {
+                todayReminders.innerHTML = '<p class="text-gray-500 text-center py-4">No reminders for today</p>';
+            }
+            
+            // Add event listeners to delete buttons
+            document.querySelectorAll('.delete-reminder').forEach(button => {
+                button.addEventListener('click', (e) => {
+                    const index = parseInt(e.currentTarget.dataset.index);
+                    state.reminders.splice(index, 1);
+                    saveData();
+                    updateRemindersUI();
+                });
+            });
+        }
+        
+        // Show notification
+        function showNotification(message, type = 'info') {
+            const notification = document.createElement('div');
+            notification.className = `notification bg-white border-l-4 p-4 mb-2 shadow-lg rounded-r-lg ${type === 'success' ? 'border-green-500' : type === 'error' ? 'border-red-500' : 'border-blue-500'}`;
+            
+            notification.innerHTML = `
+                <div class="flex items-center">
+                    <div class="flex-shrink-0">
+                        ${type === 'success' ? 
+                            '<svg class="h-5 w-5 text-green-500" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path></svg>' :
+                            type === 'error' ?
+                            '<svg class="h-5 w-5 text-red-500" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"></path></svg>' :
+                            '<svg class="h-5 w-5 text-blue-500" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"></path></svg>'
+                        }
+                    </div>
+                    <div class="ml-3">
+                        <p class="text-sm text-gray-700">${message}</p>
+                    </div>
+                </div>
+            `;
+            
+            notificationArea.appendChild(notification);
+            
+            // Remove notification after 3 seconds
+            setTimeout(() => {
+                notification.style.opacity = '0';
+                notification.style.transform = 'translateY(-10px)';
+                setTimeout(() => {
+                    notification.remove();
+                }, 300);
+            }, 3000);
+        }
+        
+        // Event Listeners
+        
+        // Save name
+        saveNameBtn.addEventListener('click', () => {
+            const name = userNameInput.value.trim();
+            if (name) {
+                state.userName = name;
+                saveData();
+                nameInput.classList.add('hidden');
+                dashboard.classList.remove('hidden');
+                updateGreeting();
+                showNotification(`Welcome to Bloom, ${name}!`, 'success');
+            } else {
+                showNotification('Please enter your name', 'error');
+            }
+        });
+        
+        // Tab navigation
+        tabButtons.forEach(button => {
+            button.addEventListener('click', () => {
+                const tab = button.dataset.tab;
+                
+                // Update active tab button
+                tabButtons.forEach(btn => {
+                    btn.classList.remove('border-pink-500', 'text-pink-600');
+                    btn.classList.add('border-transparent', 'text-gray-500');
+                });
+                button.classList.remove('border-transparent', 'text-gray-500');
+                button.classList.add('border-pink-500', 'text-pink-600');
+                
+                // Show active tab content
+                tabContents.forEach(content => {
+                    content.classList.remove('active');
+                });
+                document.getElementById(`${tab}-tab`).classList.add('active');
+            });
+        });
+        
+        // Tab triggers
+        tabTriggers.forEach(trigger => {
+            trigger.addEventListener('click', () => {
+                const tab = trigger.dataset.tabTrigger;
+                document.querySelector(`.tab-button[data-tab="${tab}"]`).click();
+            });
+        });
+        
+        // Update period
+        updatePeriodBtn.addEventListener('click', () => {
+            const lastPeriod = new Date(lastPeriodInput.value);
+            const cycleLength = parseInt(cycleLengthInput.value);
+            const periodLength = parseInt(periodLengthInput.value);
+            
+            if (isNaN(lastPeriod.getTime())) {
+                showNotification('Please enter a valid date', 'error');
+                return;
+            }
+            
+            if (cycleLength < 21 || cycleLength > 45) {
+                showNotification('Cycle length should be between 21 and 45 days', 'error');
+                return;
+            }
+            
+            if (periodLength < 2 || periodLength > 10) {
+                showNotification('Period length should be between 2 and 10 days', 'error');
+                return;
+            }
+            
+            state.period.lastPeriod = lastPeriod;
+            state.period.cycleLength = cycleLength;
+            state.period.periodLength = periodLength;
+            
+            saveData();
+            updatePeriodPredictions();
+            generateCalendar();
+            showNotification('Period information updated', 'success');
+        });
+        
+        // Water tracker buttons
+        waterBtns.forEach(button => {
+            button.addEventListener('click', () => {
+                const amount = parseInt(button.dataset.amount);
+                state.water.current = Math.min(state.water.dailyGoal, state.water.current + amount);
+                saveData();
+                updateWaterUI();
+                showNotification(`Added ${amount} glass${amount > 1 ? 'es' : ''} of water!`, 'success');
+            });
+        });
+        
+        // Reset water
+        resetWaterBtn.addEventListener('click', () => {
+            state.water.current = 0;
+            saveData();
+            updateWaterUI();
+            showNotification('Water intake reset', 'info');
+        });
+        
+        // Quick add water
+        addWaterQuickBtn.addEventListener('click', () => {
+            state.water.current = Math.min(state.water.dailyGoal, state.water.current + 1);
+            saveData();
+            updateWaterUI();
+            showNotification('Added 1 glass of water!', 'success');
+        });
+        
+        // Save water settings
+        saveWaterSettingsBtn.addEventListener('click', () => {
+            const dailyGoal = parseInt(dailyGoalInput.value);
+            const reminderInterval = parseInt(reminderIntervalInput.value);
+            const enableReminders = enableRemindersCheckbox.checked;
+            
+            if (dailyGoal < 1 || dailyGoal > 15) {
+                showNotification('Daily goal should be between 1 and 15 glasses', 'error');
+                return;
+            }
+            
+            if (reminderInterval < 30 || reminderInterval > 240) {
+                showNotification('Reminder interval should be between 30 and 240 minutes', 'error');
+                return;
+            }
+            
+            state.water.dailyGoal = dailyGoal;
+            state.water.reminderInterval = reminderInterval;
+            state.water.enableReminders = enableReminders;
+            
+            saveData();
+            updateWaterUI();
+            showNotification('Water settings saved', 'success');
+            
+            // Setup water reminders
+            if (enableReminders) {
+                setupWaterReminders();
+            }
+        });
+        
+        // Day buttons for reminders
+        dayBtns.forEach(button => {
+            button.addEventListener('click', () => {
+                const day = parseInt(button.dataset.day);
+                
+                if (button.classList.contains('bg-purple-500')) {
+                    button.classList.remove('bg-purple-500', 'text-white');
+                    button.classList.add('border-purple-200', 'hover:bg-purple-100');
+                    state.selectedDays = state.selectedDays.filter(d => d !== day);
+                } else {
+                    button.classList.add('bg-purple-500', 'text-white');
+                    button.classList.remove('border-purple-200', 'hover:bg-purple-100');
+                    state.selectedDays.push(day);
+                }
+            });
+        });
+        
+        // Add reminder
+        addReminderBtn.addEventListener('click', () => {
+            const title = reminderTitle.value.trim();
+            const time = reminderTime.value;
+            const category = reminderCategory.value;
+            const days = [...state.selectedDays];
+            
+            if (!title) {
+                showNotification('Please enter a reminder title', 'error');
+                return;
+            }
+            
+            if (!time) {
+                showNotification('Please select a time', 'error');
+                return;
+            }
+            
+            if (days.length === 0) {
+                showNotification('Please select at least one day', 'error');
+                return;
+            }
+            
+            state.reminders.push({
+                title,
+                time,
+                category,
+                days
+            });
+            
+            saveData();
+            updateRemindersUI();
+            
+            // Reset form
+            reminderTitle.value = '';
+            reminderTime.value = '';
+            dayBtns.forEach(button => {
+                button.classList.remove('bg-purple-500', 'text-white');
+                button.classList.add('border-purple-200', 'hover:bg-purple-100');
+            });
+            state.selectedDays = [];
+            
+            showNotification('Reminder added successfully', 'success');
+        });
+        
+        // Symptom tracking
+        symptomBtns.forEach(button => {
+            button.addEventListener('click', () => {
+                const symptom = button.dataset.symptom;
+                const today = new Date().toISOString().split('T')[0];
+                
+                if (!state.symptoms[today]) {
+                    state.symptoms[today] = [];
+                }
+                
+                if (state.symptoms[today].includes(symptom)) {
+                    state.symptoms[today] = state.symptoms[today].filter(s => s !== symptom);
+                    button.classList.remove('border-pink-500', 'bg-pink-50');
+                    showNotification(`Removed ${symptom} from today's symptoms`, 'info');
+                } else {
+                    state.symptoms[today].push(symptom);
+                    button.classList.add('border-pink-500', 'bg-pink-50');
+                    showNotification(`Added ${symptom} to today's symptoms`, 'success');
+                }
+                
+                saveData();
+            });
+        });
+        
+        // Setup water reminders
+        function setupWaterReminders() {
+            if (!state.water.enableReminders) return;
+            
+            // Check if we need to show a reminder
+            const now = new Date();
+            const lastReminder = state.water.lastReminder ? new Date(state.water.lastReminder) : null;
+            
+            if (!lastReminder || (now - lastReminder) / (1000 * 60) >= state.water.reminderInterval) {
+                // Show reminder if we haven't reached the daily goal
+                if (state.water.current < state.water.dailyGoal) {
+                    showNotification('Time to drink water! 💧', 'info');
+                    state.water.lastReminder = now;
+                    saveData();
+                }
+            }
+            
+            // Check again after the interval
+            setTimeout(setupWaterReminders, state.water.reminderInterval * 60 * 1000);
+        }
+        
+        // Check for reminders
+        function checkReminders() {
+            if (state.reminders.length === 0) return;
+            
+            const now = new Date();
+            const currentHour = now.getHours();
+            const currentMinute = now.getMinutes();
+            const currentDay = now.getDay();
+            
+            state.reminders.forEach(reminder => {
+                if (reminder.days.includes(currentDay)) {
+                    const [reminderHour, reminderMinute] = reminder.time.split(':').map(Number);
+                    
+                    if (reminderHour === currentHour && reminderMinute === currentMinute) {
+                        showNotification(`Reminder: ${reminder.title}`, 'info');
+                    }
+                }
+            });
+            
+            // Check again in a minute
+            setTimeout(checkReminders, 60 * 1000);
+        }
+        
+        // Initialize app
+        loadSavedData();
+        setupWaterReminders();
+        checkReminders();
+        
+        // Reset water at midnight
+        function setupMidnightReset() {
+            const now = new Date();
+            const midnight = new Date();
+            midnight.setHours(24, 0, 0, 0);
+            
+            const timeUntilMidnight = midnight - now;
+            
+            setTimeout(() => {
+                state.water.current = 0;
+                saveData();
+                updateWaterUI();
+                
+                // Setup for next day
+                setupMidnightReset();
+            }, timeUntilMidnight);
+        }
+        
+        setupMidnightReset();
+    </script>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'93c99c5092b4b29a',t:'MTc0NjcxNDE2Mi4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>
